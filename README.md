@@ -942,8 +942,8 @@ See the [LICENSE](LICENSE) file for details.
 ## Support and Contributing
 
 For issues, questions, or contributions:
-- **Repository**: https://github.com/tanaka/quantum-harvest
-- **Issues**: https://github.com/tanaka/quantum-harvest/issues
+- **Repository**: https://github.com/tanaka-chiromo/quantum-harvest
+- **Issues**: https://github.com/tanaka-chiromo/quantum-harvest/issues
 
 ---
 
