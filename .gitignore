@@ -183,3 +183,9 @@ Thumbs.db
 *_PUBLISHING.md
 
 *_SUMMARY.md
+
+game_logs/
+
+venv*/
+
+reasonable_agent.py
