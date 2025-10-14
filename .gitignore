@@ -180,3 +180,6 @@ logs/
 .DS_Store
 Thumbs.db
 
+*_PUBLISHING.md
+
+*_SUMMARY.md

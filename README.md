@@ -31,10 +31,16 @@ Quantum Harvest is a turn-based strategy game where two AI agents compete for qu
 
 ## Installation
 
+### From PyPI (Recommended)
+
+```bash
+pip install quantum-harvest
+```
+
 ### From Source
 
 ```bash
-git clone https://github.com/tanaka/quantum-harvest.git
+git clone https://github.com/tanaka-chiromo/quantum-harvest.git
 cd quantum-harvest
 pip install -e .
 ```
@@ -52,11 +58,14 @@ pip install -e .
 ### 1. Run a Game
 
 ```bash
-# Run two agents against each other
+# Run two agents against each other (using CLI)
+quantum-harvest play --agent1 my_agent.py --agent2 opponent_agent.py
+
+# Or using Python module directly
 python -m quantum_harvest.agent_v_agent_script --agent1 my_agent.py --agent2 opponent_agent.py
 
 # With custom settings
-python -m quantum_harvest.agent_v_agent_script \
+quantum-harvest play \
     --agent1 my_agent.py \
     --agent2 opponent_agent.py \
     --map-size 16 \
@@ -66,11 +75,27 @@ python -m quantum_harvest.agent_v_agent_script \
 ### 2. View Replay
 
 ```bash
-# Launch replay visualizer
+# Launch replay visualizer (using CLI)
+quantum-harvest replay game_log_20241201_143022.json
+
+# Or using Python module directly
 python -m quantum_harvest.run_replay_visualizer game_log_20241201_143022.json
 ```
 
-### 3. Start Developing
+### 3. Get Help
+
+```bash
+# Show CLI help
+quantum-harvest --help
+
+# Show package info
+quantum-harvest info
+
+# Show version
+quantum-harvest version
+```
+
+### 4. Start Developing
 
 See `quantum_harvest/starter_agent.py` for a complete template and example agent implementation.
 
