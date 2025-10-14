@@ -6,9 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "quantum-harvest"
 version = "1.0.0"
 authors = [
-    {name = "Tanaka Chiromo", email = "tanaka@example.com"},
+    {name = "Tanaka Chiromo", email = "tanakachiromo@gmail.com"},
 ]
-description = "A competitive 1v1 AI game combining quantum mechanics with strategic resource management"
+description = "A competitive 1v1 AI simulation game combining quantum mechanics with strategic resource management"
 readme = "README.md"
 license = "CC-BY-NC-4.0"
 license-files = ["LICENSE"]
@@ -45,9 +45,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/tanaka/quantum-harvest"
-Repository = "https://github.com/tanaka/quantum-harvest.git"
-Issues = "https://github.com/tanaka/quantum-harvest/issues"
+Homepage = "https://github.com/tanaka-chiromo/quantum-harvest"
+Repository = "https://github.com/tanaka-chiromo/quantum-harvest.git"
+Issues = "https://github.com/tanaka-chiromo/quantum-harvest/issues"
 
 [project.scripts]
 quantum-harvest = "quantum_harvest.cli:main"
