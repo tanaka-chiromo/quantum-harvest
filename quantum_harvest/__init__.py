@@ -9,7 +9,7 @@ from .utils import TileType, UnitType, ActionType
 from . import agent_v_agent_script
 from . import agent_v_agent_config
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Tanaka Chiromo"
 
 __all__ = [

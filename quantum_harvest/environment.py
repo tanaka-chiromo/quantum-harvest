@@ -1269,20 +1269,26 @@ class QuantumHarvestEnv:
         """Get the current observation with fog of war."""
         # Convert units to array format (expanded to include boost info)
         # NOTE: This returns ALL units for internal use - use get_player_observation for fog of war
-        # Create dynamic array that can hold all units (no artificial limits)
-        max_array_size = max(1000, len(self.units) + 100)  # Ensure enough space
-        units_array = np.zeros((max_array_size, 8), dtype=np.int16)
-        for i, unit in enumerate(self.units):  # Include ALL units, no limits
-            units_array[i] = [
-                unit.unit_id,  # Use actual unit ID to match _execute_unit_action lookup
+        # Build a trimmed units array with only valid (health > 0) units; no padding
+        valid_units_rows = []
+        for unit in self.units:
+            unit_health_int = int(unit.health)
+            if unit_health_int <= 0:
+                continue
+            valid_units_rows.append([
+                unit.unit_id,
                 unit.player_id,
                 unit.unit_type.value,
                 unit.position[0],
                 unit.position[1],
-                int(unit.health),
-                int(unit.is_boosted),  # Boost status (0 or 1)
-                unit.boost_attacks_remaining  # Remaining boosted attacks
-            ]
+                unit_health_int,
+                int(unit.is_boosted),
+                unit.boost_attacks_remaining
+            ])
+        if len(valid_units_rows) > 0:
+            units_array = np.array(valid_units_rows, dtype=np.int16)
+        else:
+            units_array = np.zeros((0, 8), dtype=np.int16)
         
         # Create fog of war map for each player
         fog_maps = []
@@ -1380,7 +1386,8 @@ class QuantumHarvestEnv:
                 filtered_count += 1
             # If enemy unit is in unexplored area, don't include it (fog of war hides it)
         
-        return filtered_units
+        # Return only the populated portion (trim zero-padding)
+        return filtered_units[:filtered_count] if filtered_count > 0 else np.zeros((0, units_array.shape[1]), dtype=units_array.dtype)
     
     def _get_info(self) -> Dict[str, Any]:
         """Get additional information about the game state."""
