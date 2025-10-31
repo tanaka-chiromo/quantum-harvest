@@ -466,10 +466,10 @@ observation = {
 
 ### Units Array (`observation['units']`)
 
-Each unit is represented as an array with 9 elements:
+Each unit is represented as an array with 8 elements:
 
 ```python
-[unit_id, player_id, unit_type, x, y, health, energy, is_boosted, boost_attacks_remaining]
+[unit_id, player_id, unit_type, x, y, health, is_boosted, boost_attacks_remaining]
 ```
 
 - **unit_id**: Unique identifier for the unit (int)
