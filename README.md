@@ -442,7 +442,7 @@ The game provides a comprehensive observation dictionary:
 ```python
 observation = {
     'map': np.ndarray,                    # 2D array (map_size × map_size) of tile types
-    'units': np.ndarray,                  # Array of all units [unit_id, player_id, unit_type, x, y, health, energy, is_boosted, boost_attacks]
+    'units': np.ndarray,                  # Array of all units [unit_id, player_id, unit_type, x, y, health, is_boosted, boost_attacks_remaining]
     'player_energy': np.ndarray,          # Array [player_0_energy, player_1_energy]
     'turn': np.ndarray,                   # Current turn number [turn]
     'fog_maps': np.ndarray,               # Player-specific fog of war maps

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quantum-harvest"
-version = "1.0.1"
+version = "1.0.2"
 authors = [
     {name = "Tanaka Chiromo", email = "tanakachiromo@gmail.com"},
 ]
