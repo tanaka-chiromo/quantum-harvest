@@ -466,18 +466,18 @@ observation = {
 
 ### Units Array (`observation['units']`)
 
-Each unit is represented as an array with 9 elements:
+Each unit is represented as an array with 8 elements:
 
 ```python
-[unit_id, player_id, unit_type, x, y, health, energy, is_boosted, boost_attacks_remaining]
+[unit_id, player_id, unit_type, x, y, health, is_boosted, boost_attacks_remaining]
 ```
 
 - **unit_id**: Unique identifier for the unit (int)
 - **player_id**: 0 for Player 1, 1 for Player 2
 - **unit_type**: 0=Harvester, 1=Warrior, 2=Scout
-- **x, y**: Position coordinates on the map
+- **x**: X Position on the map
+- **y**: Y Position on the map
 - **health**: Current health points (default: 45, max: 300)
-- **energy**: ⚠️ **Deprecated** - Always 0, not used in gameplay
 - **is_boosted**: Boolean (0 or 1) indicating if unit has entanglement boost
 - **boost_attacks_remaining**: Number of boosted attacks remaining (0-2)
 
