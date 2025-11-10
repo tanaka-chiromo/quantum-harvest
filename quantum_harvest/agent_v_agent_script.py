@@ -308,14 +308,6 @@ Examples:
     turn = 0
     
     while not done and turn < MAX_TURNS:
-        # Get actions - each agent gets their own player-specific observation
-        #player1_obs = env.get_player_observation(0)
-        #player2_obs = env.get_player_observation(1)
-        
-        #action1 = agent1.get_action(player1_obs)
-        #action2 = agent2.get_action(player2_obs)
-        
-        # Execute actions for both players in a single step
         # Combine actions from both players using player-specific keys to avoid conflicts
         combined_actions = {}
         p1_actions = {}
@@ -344,13 +336,6 @@ Examples:
         # Log unit movements
         if ENABLE_MOVEMENT_LOGGING:
             log_unit_movements(turn + 1, observation, combined_actions, movement_log)
-        
-        #p1 actions resolved first, then p2 actions
-        #observation, reward, terminated, truncated, info = env.step(p1_actions)
-        #observation, reward, terminated, truncated, info = env.step(p2_actions)
-
-        # Execute all actions in one step
-        #observation, reward, terminated, truncated, info = env.step(combined_actions)
         
         # Render the game state
         if render_mode and not env.render():
