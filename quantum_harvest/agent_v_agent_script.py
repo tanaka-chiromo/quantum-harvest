@@ -319,7 +319,7 @@ Examples:
         for unit_id, action in action1.items():
             # Use player-specific key format: "p0_unitid" for player 0
             combined_actions[f"p0_{unit_id}"] = action
-            p1_actions[unit_id] = action
+            p1_actions[f"p0_{unit_id}"] = action
 
         observation, reward, terminated, truncated, info = env.step(p1_actions, increment_turn=False)
 
@@ -329,7 +329,7 @@ Examples:
         for unit_id, action in action2.items():
             # Use player-specific key format: "p1_unitid" for player 1  
             combined_actions[f"p1_{unit_id}"] = action
-            p2_actions[unit_id] = action
+            p2_actions[f"p1_{unit_id}"] = action
 
         observation, reward, terminated, truncated, info = env.step(p2_actions, increment_turn=True)
 
