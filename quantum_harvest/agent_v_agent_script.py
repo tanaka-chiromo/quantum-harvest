@@ -309,32 +309,48 @@ Examples:
     
     while not done and turn < MAX_TURNS:
         # Get actions - each agent gets their own player-specific observation
-        player1_obs = env.get_player_observation(0)
-        player2_obs = env.get_player_observation(1)
+        #player1_obs = env.get_player_observation(0)
+        #player2_obs = env.get_player_observation(1)
         
-        action1 = agent1.get_action(player1_obs)
-        action2 = agent2.get_action(player2_obs)
+        #action1 = agent1.get_action(player1_obs)
+        #action2 = agent2.get_action(player2_obs)
         
         # Execute actions for both players in a single step
         # Combine actions from both players using player-specific keys to avoid conflicts
         combined_actions = {}
-        
+        p1_actions = {}
+        p2_actions = {}
+
+        player1_obs = env.get_player_observation(0)
+        action1 = agent1.get_action(player1_obs)
         # Add player 1 actions with player prefix to avoid ID conflicts
         for unit_id, action in action1.items():
             # Use player-specific key format: "p0_unitid" for player 0
             combined_actions[f"p0_{unit_id}"] = action
-        
+            p1_actions[unit_id] = action
+
+        observation, reward, terminated, truncated, info = env.step(p1_actions, increment_turn=False)
+
+        player2_obs = env.get_player_observation(1)
+        action2 = agent2.get_action(player2_obs)
         # Add player 2 actions with player prefix
         for unit_id, action in action2.items():
             # Use player-specific key format: "p1_unitid" for player 1  
             combined_actions[f"p1_{unit_id}"] = action
-        
-        # Log unit movements before step
+            p2_actions[unit_id] = action
+
+        observation, reward, terminated, truncated, info = env.step(p2_actions, increment_turn=True)
+
+        # Log unit movements
         if ENABLE_MOVEMENT_LOGGING:
             log_unit_movements(turn + 1, observation, combined_actions, movement_log)
         
+        #p1 actions resolved first, then p2 actions
+        #observation, reward, terminated, truncated, info = env.step(p1_actions)
+        #observation, reward, terminated, truncated, info = env.step(p2_actions)
+
         # Execute all actions in one step
-        observation, reward, terminated, truncated, info = env.step(combined_actions)
+        #observation, reward, terminated, truncated, info = env.step(combined_actions)
         
         # Render the game state
         if render_mode and not env.render():

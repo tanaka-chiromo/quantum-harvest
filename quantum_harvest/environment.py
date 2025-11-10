@@ -236,13 +236,16 @@ class QuantumHarvestEnv:
         
         return observation, info
     
-    def step(self, action: Dict[int, np.ndarray]) -> Tuple[Dict[str, np.ndarray], float, bool, bool, Dict[str, Any]]:
+    def step(self, action: Dict[int, np.ndarray], increment_turn: bool = True) -> Tuple[Dict[str, np.ndarray], float, bool, bool, Dict[str, Any]]:
         """
         Execute one step in the environment with multi-action support.
         
         Args:
             action: Dictionary mapping unit_id to action array [action_type, direction_x, direction_y, energy_boost]
                    or single action array for backward compatibility
+            increment_turn: Whether to increment the environment turn counter after this step.
+                            Set to False for mid-round steps (e.g., per-player sub-steps) and True
+                            for the end-of-round step so that env.turn advances once per full round.
             
         Returns:
             observation: Current game state
@@ -316,8 +319,9 @@ class QuantumHarvestEnv:
         # Check victory conditions
         terminated, winner = self._check_victory_conditions()
         
-        # Update turn
-        self.turn += 1
+        # Update turn (optionally, to support multi-step per round)
+        if increment_turn:
+            self.turn += 1
         
         # Check if game should be truncated
         truncated = self.turn >= self.max_turns
