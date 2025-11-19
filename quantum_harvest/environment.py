@@ -170,6 +170,12 @@ class QuantumHarvestEnv:
         ])
         
         # Observation space
+        # Note: max_energy_nodes is only for the observation space definition (Gymnasium requires fixed shape).
+        # The actual returned arrays are dynamic and can be smaller (0 to max_energy_nodes items, no padding).
+        # Maximum energy nodes = max_energy_pairs * 2 (mirror symmetry)
+        # max_energy_pairs = map_size // ENERGY_NODE_MAX_PAIRS_RATIO = map_size // 2
+        # So max_energy_nodes = (map_size // 2) * 2 = map_size
+        max_energy_nodes = map_size
         self.observation_space = spaces.Dict({
             'map': spaces.Box(low=0, high=5, shape=(map_size, map_size), dtype=np.int8),
             'fog_maps': spaces.Box(low=-1, high=5, shape=(2, map_size, map_size), dtype=np.int8),  # Fog of war for each player
@@ -177,7 +183,9 @@ class QuantumHarvestEnv:
             'player_energy': spaces.Box(low=0, high=energy_victory_threshold, shape=(2,), dtype=np.float32),
             'turn': spaces.Box(low=0, high=max_turns, shape=(1,), dtype=np.int32),
             'territory_control': spaces.Box(low=0, high=1, shape=(2,), dtype=np.float32),
-            'exploration_percentage': spaces.Box(low=0, high=1, shape=(2,), dtype=np.float32)
+            'exploration_percentage': spaces.Box(low=0, high=1, shape=(2,), dtype=np.float32),
+            'energy_nodes': spaces.Box(low=0, high=map_size-1, shape=(max_energy_nodes, 2), dtype=np.int16),  # Max size for space definition; actual arrays are dynamic (0 to max items, no padding)
+            'energy_values': spaces.Box(low=0, high=ENERGY_NODE_MAX_VALUE, shape=(max_energy_nodes,), dtype=np.float32)  # Max size for space definition; actual arrays are dynamic (0 to max items, no padding)
         })
         
         # Metadata
@@ -1322,6 +1330,8 @@ class QuantumHarvestEnv:
                 len(self.explored_tiles[0]) / (self.map_size * self.map_size),
                 len(self.explored_tiles[1]) / (self.map_size * self.map_size)
             ], dtype=np.float32)
+            # Note: energy_nodes and energy_values are NOT in base observation
+            # They are only added in get_player_observation() with fog of war filtering
         }
     
     def get_player_observation(self, player_id: int) -> Dict[str, np.ndarray]:
@@ -1340,6 +1350,10 @@ class QuantumHarvestEnv:
         # Create player-specific observation
         player_obs = base_obs.copy()
         
+        # Replace map with player's fog map (only shows explored tiles, -1 for unexplored)
+        player_fog_map = base_obs['fog_maps'][player_id]
+        player_obs['map'] = player_fog_map.copy()  # Use fog map as the map (explored tiles only)
+        
         # Replace fog_maps with only this player's fog map
         player_obs['fog_maps'] = base_obs['fog_maps'][player_id:player_id+1]  # Keep as 3D array
         
@@ -1351,6 +1365,11 @@ class QuantumHarvestEnv:
         # CRITICAL FIX: Filter units array based on fog of war
         filtered_units = self._filter_units_by_fog_of_war(base_obs['units'], player_id)
         player_obs['units'] = filtered_units
+        
+        # Filter energy nodes to only show those in explored tiles
+        filtered_energy_nodes, filtered_energy_values = self._filter_energy_nodes_by_fog_of_war(player_id)
+        player_obs['energy_nodes'] = filtered_energy_nodes
+        player_obs['energy_values'] = filtered_energy_values
         
         return player_obs
     
@@ -1392,6 +1411,40 @@ class QuantumHarvestEnv:
         
         # Return only the populated portion (trim zero-padding)
         return filtered_units[:filtered_count] if filtered_count > 0 else np.zeros((0, units_array.shape[1]), dtype=units_array.dtype)
+    
+    def _filter_energy_nodes_by_fog_of_war(self, player_id: int) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Filter energy nodes to only show those in explored tiles for the specified player.
+        
+        Args:
+            player_id: ID of the player (0 or 1)
+            
+        Returns:
+            Tuple of (energy_nodes_array, energy_values_array) with only explored nodes
+            Returns empty arrays if no nodes are visible (no padding)
+        """
+        # Collect only explored energy nodes (no padding)
+        filtered_nodes = []
+        filtered_values = []
+        
+        for i, (x, y) in enumerate(self.energy_nodes):
+            # Only include if:
+            # 1. The tile is explored by this player
+            # 2. The tile is still an energy node (hasn't been depleted)
+            if (x, y) in self.explored_tiles[player_id] and self.map[x, y] == TileType.ENERGY_NODE.value:
+                filtered_nodes.append([x, y])
+                filtered_values.append(self.energy_values[i])
+        
+        # Return dynamic arrays with only visible nodes (no padding)
+        if len(filtered_nodes) > 0:
+            energy_nodes_array = np.array(filtered_nodes, dtype=np.int16)
+            energy_values_array = np.array(filtered_values, dtype=np.float32)
+        else:
+            # Return empty arrays if no nodes visible
+            energy_nodes_array = np.zeros((0, 2), dtype=np.int16)
+            energy_values_array = np.zeros((0,), dtype=np.float32)
+        
+        return energy_nodes_array, energy_values_array
     
     def _get_info(self) -> Dict[str, Any]:
         """Get additional information about the game state."""
